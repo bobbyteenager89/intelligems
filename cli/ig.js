@@ -4,7 +4,9 @@ const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const CONTENT_DIR = path.join(__dirname, '..', 'content');
+// Resolve real path through symlinks so __dirname works when invoked via ~/.local/bin/ig
+const SCRIPT_DIR = path.dirname(fs.realpathSync(__filename));
+const CONTENT_DIR = path.join(SCRIPT_DIR, '..', 'content');
 const BUDGET_HOURS = 40;
 const BUDGET_RESET_DAY = 7;
 const PORT = 3040;
