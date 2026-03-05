@@ -7,7 +7,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from '
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Code2, Workflow, Plus } from 'lucide-react';
+import { Code2, ExternalLink, Workflow, Plus } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 interface Task {
@@ -39,6 +39,7 @@ export default function ProjectsPage() {
   const [showDialog, setShowDialog] = useState(false);
   const [newTask, setNewTask] = useState({ text: '', projectSlug: '' });
   const [saving, setSaving] = useState(false);
+  const [sentTasks, setSentTasks] = useState<Set<string>>(new Set());
 
   useEffect(() => {
     fetch('/api/projects').then(r => r.json()).then(setProjects);
@@ -59,6 +60,20 @@ export default function ProjectsPage() {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ filePath: project.filePath, taskText: task.text, completed: newCompleted }),
+    });
+  }
+
+  async function sendTaskToPersonalOS(project: ProjectFile, task: Task) {
+    const key = `${project.slug}:${task.text}`;
+    setSentTasks(prev => new Set([...prev, key]));
+    await fetch('/api/projects/send', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        taskText: task.text,
+        projectTitle: project.title,
+        projectSlug: project.slug,
+      }),
     });
   }
 
@@ -143,6 +158,21 @@ export default function ProjectsPage() {
                 <span className={cn('text-xs flex-1', task.completed && 'line-through text-muted-foreground')}>
                   {task.text}
                 </span>
+                {!task.completed && (
+                  <button
+                    onClick={() => sendTaskToPersonalOS(project, task)}
+                    disabled={sentTasks.has(`${project.slug}:${task.text}`)}
+                    aria-label="Send to personal-os"
+                    className={cn(
+                      'shrink-0 rounded p-0.5 transition-colors',
+                      sentTasks.has(`${project.slug}:${task.text}`)
+                        ? 'text-emerald-500 cursor-default'
+                        : 'text-muted-foreground hover:text-foreground'
+                    )}
+                  >
+                    <ExternalLink className="size-3" />
+                  </button>
+                )}
               </div>
             ))}
           </div>
