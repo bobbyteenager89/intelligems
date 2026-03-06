@@ -43,7 +43,44 @@
 
 ### Next Steps
 - [ ] Test ↗ send button end-to-end with personal-os running
-- [ ] Add `ig` to PATH via ~/.zshrc (export PATH="$HOME/.local/bin:$PATH")
+- [x] Add `ig` to PATH via ~/.zshrc
 - [ ] Rename browser tab title from "Create Next App" to "Intelligems Workspace"
 - [ ] Add mobile-responsive layout for occasional phone use
 - [ ] Phase 5 (future): personal-os → intelligems back-sync (poll for completed status)
+
+---
+
+## 2026-03-06 — Session 2: Neon DB + Vercel Deploy
+
+### Accomplished
+- Created GitHub repo: https://github.com/bobbyteenager89/intelligems
+- Linked Vercel project and deployed to https://intelligems.vercel.app
+- Migrated all write operations from local filesystem to Neon DB (`neon-fulvous-school`)
+- Added Drizzle ORM: 3 tables (time_entries, tasks, meeting_notes)
+- Wrote seed script — imported 16 time entries + 29 tasks from existing markdown files
+- Updated 5 API routes to use Drizzle instead of fs writes
+- Notes/frameworks/reports remain as markdown in repo (read-only on Vercel, works fine)
+- Added `ig` to PATH via ~/.zshrc — `ig status` works from any terminal
+- Updated global CLAUDE.md: all future projects always get GitHub + Vercel (no localhost-only)
+
+### Files Modified
+| File | Changes |
+|------|---------|
+| `src/lib/db/schema.ts` | Drizzle schema: time_entries, tasks, meeting_notes |
+| `src/lib/db/index.ts` | Neon + Drizzle client |
+| `drizzle.config.ts` | Drizzle Kit config |
+| `src/app/api/time/route.ts` | Reads/writes time_entries table |
+| `src/app/api/projects/route.ts` | Merges file metadata + DB tasks |
+| `src/app/api/projects/task/route.ts` | Toggles task via projectSlug |
+| `src/app/api/projects/task/add/route.ts` | Inserts task row |
+| `src/app/api/notes/route.ts` | Merges file + DB meetings |
+| `src/app/api/notes/create/route.ts` | Inserts meeting_notes row |
+| `src/lib/content.ts` | Added getProjectMeta() (metadata without tasks) |
+| `src/app/(dashboard)/projects/page.tsx` | Uses projectSlug for task API calls |
+| `scripts/seed-db.ts` | One-time seed from markdown files |
+| `.gitignore` | Added .env.local |
+
+### Next Steps
+- [ ] Rename browser tab title from "Create Next App" to "Intelligems Workspace"
+- [ ] Test ↗ send button end-to-end with personal-os running
+- [ ] Add mobile-responsive layout for occasional phone use

@@ -1,14 +1,15 @@
 # Intelligems Workspace
 
 ## Overview
-Local consulting ops dashboard for Intelligems fractional engagement.
-NOT deployed — runs locally at localhost:3040.
+Consulting ops dashboard for Intelligems fractional engagement.
+Deployed at https://intelligems.vercel.app
 
 ## Tech Stack
-- Next.js 15 (App Router), TypeScript, Tailwind CSS 4
+- Next.js 16 (App Router), TypeScript, Tailwind CSS 4
 - shadcn/ui (new-york, neutral), Lucide React
 - gray-matter (frontmatter parsing), react-markdown + remark-gfm
-- File-based content (no database)
+- Neon (Postgres via Drizzle ORM) — time entries, tasks, meeting notes
+- Markdown files in repo — notes, frameworks, reports (read-only on Vercel)
 
 ## Commands
 - `npm run dev` — start on port 3040
