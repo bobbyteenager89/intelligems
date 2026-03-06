@@ -1,14 +1,17 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
+import { db } from '@/lib/db';
+import { tasks } from '@/lib/db/schema';
 
 export async function POST(req: Request) {
-  const { filePath, taskText } = await req.json();
-  if (!filePath || !taskText) {
+  const { projectSlug, taskText } = await req.json() as {
+    projectSlug?: string;
+    taskText?: string;
+  };
+
+  if (!projectSlug || !taskText) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
   }
 
-  const content = fs.readFileSync(filePath, 'utf-8').trimEnd();
-  const updated = content + `\n- [ ] ${taskText}`;
-  fs.writeFileSync(filePath, updated + '\n', 'utf-8');
+  await db.insert(tasks).values({ projectSlug, text: taskText, completed: false });
   return NextResponse.json({ success: true });
 }

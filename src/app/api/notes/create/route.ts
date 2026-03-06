@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import fs from 'fs';
-import path from 'path';
+import { db } from '@/lib/db';
+import { meetingNotes } from '@/lib/db/schema';
 
 export async function POST(req: Request) {
   const body = await req.json() as {
@@ -16,18 +16,15 @@ export async function POST(req: Request) {
   }
 
   const slug = `${date}-${person.toLowerCase().replace(/\s+/g, '-').replace(/[^a-z0-9-]/g, '')}`;
-  const filePath = path.join(process.cwd(), 'content/notes/meetings', `${slug}.md`);
 
-  const content = `---
-title: ${person}
-date: ${date}
-duration: ${duration || 'unknown'}
-person: ${person}
----
+  await db.insert(meetingNotes).values({
+    slug,
+    title: person,
+    date,
+    duration: duration || '',
+    person,
+    content: summary,
+  });
 
-${summary}
-`;
-
-  fs.writeFileSync(filePath, content, 'utf-8');
-  return NextResponse.json({ slug, filePath });
+  return NextResponse.json({ slug });
 }

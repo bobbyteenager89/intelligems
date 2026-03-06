@@ -59,7 +59,7 @@ export default function ProjectsPage() {
     await fetch('/api/projects/task', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filePath: project.filePath, taskText: task.text, completed: newCompleted }),
+      body: JSON.stringify({ projectSlug: project.slug, taskText: task.text, completed: newCompleted }),
     });
   }
 
@@ -86,7 +86,7 @@ export default function ProjectsPage() {
     await fetch('/api/projects/task/add', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ filePath: project.filePath, taskText: newTask.text }),
+      body: JSON.stringify({ projectSlug: project.slug, taskText: newTask.text }),
     });
     setSaving(false);
     setShowDialog(false);

@@ -47,6 +47,18 @@ export interface ProjectFile {
   filePath: string;
 }
 
+export interface ProjectMeta {
+  slug: string;
+  title: string;
+  type: 'code' | 'workstream';
+  status: string;
+  phases?: number;
+  currentPhase?: number;
+  repo?: string;
+  description?: string;
+  filePath: string;
+}
+
 // --- Notes ---
 
 export function getMeetings(): NoteFile[] {
@@ -171,6 +183,38 @@ export function appendTimeEntry(yearMonth: string, entry: TimeEntry): void {
 }
 
 // --- Projects ---
+
+export function getProjectMeta(): ProjectMeta[] {
+  const codeDir = path.join(CONTENT_DIR, 'projects/code');
+  const workstreamDir = path.join(CONTENT_DIR, 'projects/workstreams');
+  return [
+    ...readProjectMetaDir(codeDir, 'code'),
+    ...readProjectMetaDir(workstreamDir, 'workstream'),
+  ];
+}
+
+function readProjectMetaDir(dir: string, type: 'code' | 'workstream'): ProjectMeta[] {
+  if (!fs.existsSync(dir)) return [];
+  return fs.readdirSync(dir)
+    .filter(f => f.endsWith('.md'))
+    .map(filename => {
+      const filePath = path.join(dir, filename);
+      const raw = fs.readFileSync(filePath, 'utf-8');
+      const { data } = matter(raw);
+      const slug = filename.replace('.md', '');
+      return {
+        slug,
+        title: data.title || slug,
+        type: (data.type || type) as 'code' | 'workstream',
+        status: data.status || 'active',
+        phases: data.phases,
+        currentPhase: data.currentPhase,
+        repo: data.repo,
+        description: data.description,
+        filePath,
+      };
+    });
+}
 
 export function getProjects(): ProjectFile[] {
   const codeDir = path.join(CONTENT_DIR, 'projects/code');

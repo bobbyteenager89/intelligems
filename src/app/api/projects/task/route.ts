@@ -1,11 +1,22 @@
 import { NextResponse } from 'next/server';
-import { updateTaskInProject } from '@/lib/content';
+import { db } from '@/lib/db';
+import { tasks } from '@/lib/db/schema';
+import { eq, and } from 'drizzle-orm';
 
 export async function POST(req: Request) {
-  const { filePath, taskText, completed } = await req.json();
-  if (!filePath || taskText === undefined || completed === undefined) {
+  const { projectSlug, taskText, completed } = await req.json() as {
+    projectSlug?: string;
+    taskText?: string;
+    completed?: boolean;
+  };
+
+  if (!projectSlug || taskText === undefined || completed === undefined) {
     return NextResponse.json({ error: 'Missing fields' }, { status: 400 });
   }
-  updateTaskInProject(filePath, taskText, completed);
+
+  await db.update(tasks)
+    .set({ completed })
+    .where(and(eq(tasks.projectSlug, projectSlug), eq(tasks.text, taskText)));
+
   return NextResponse.json({ success: true });
 }
