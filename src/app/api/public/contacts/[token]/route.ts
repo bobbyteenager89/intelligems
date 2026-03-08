@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { contacts, contactBenchmarkTags, contactDeliverables, contactTasks, meetingNotes } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { fetchBenchmarks } from '@/lib/benchmarks';
 
 export async function GET(_req: Request, { params }: { params: Promise<{ token: string }> }) {
   const { token } = await params;
@@ -16,5 +17,7 @@ export async function GET(_req: Request, { params }: { params: Promise<{ token: 
     db.select().from(meetingNotes).where(eq(meetingNotes.contactSlug, contact.slug)),
   ]);
 
-  return NextResponse.json({ contact, tags, deliverables, tasks, meetings });
+  const benchmarks = await fetchBenchmarks(tags.map(t => t.tag));
+
+  return NextResponse.json({ contact, tags, deliverables, tasks, meetings, benchmarks });
 }
