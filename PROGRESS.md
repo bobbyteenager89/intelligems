@@ -120,8 +120,13 @@
 | `src/app/(dashboard)/focus/page.tsx` | By-Contact task grouping section |
 | `src/app/layout.tsx` | Renamed browser tab to "Intelligems Workspace" |
 
+### Also Completed (end of session)
+- Set BENCHMARKER_URL, BENCHMARKER_SECRET, NEXT_PUBLIC_APP_URL on intelligems Vercel
+- Set INTERNAL_API_SECRET on Benchmarker Vercel — bridge fully wired in production
+- Redeployed both apps
+
 ### Next Steps
-- [ ] Seed contacts via UI: Jerry (tag: analytics), Drew (tasks: profit guessing game, CAC calculator)
+- [ ] Seed contacts via UI: Jerry (tag: analytics), Drew (tasks: profit guessing game, CAC calculator), Drew+Adam (deck task)
 - [ ] Test public share page at /c/[token] in incognito
-- [ ] Add BENCHMARKER_URL + BENCHMARKER_SECRET env vars to Vercel when Benchmarker bridge is ready
 - [ ] Add mobile-responsive layout for occasional phone use
+- [ ] Add Productized CRO as a workstream in Projects tab
