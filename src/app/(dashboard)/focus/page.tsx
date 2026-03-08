@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react';
 import { Progress } from '@/components/ui/progress';
 import { Badge } from '@/components/ui/badge';
-import { Target, CheckSquare } from 'lucide-react';
+import { Target, CheckSquare, Users } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { BUDGET_HOURS } from '@/lib/config';
 
@@ -37,6 +37,8 @@ const PROJECT_LABELS: Record<string, string> = {
 export default function FocusPage() {
   const [projects, setProjects] = useState<ProjectFile[]>([]);
   const [timeLog, setTimeLog] = useState<MonthlyLog | null>(null);
+  const [contacts, setContacts] = useState<{ slug: string; name: string; company: string }[]>([]);
+  const [contactTasksMap, setContactTasksMap] = useState<Record<string, { id: number; text: string; completed: boolean }[]>>({});
 
   const currentMonth = (() => {
     const d = new Date();
@@ -46,6 +48,16 @@ export default function FocusPage() {
   useEffect(() => {
     fetch('/api/projects').then(r => r.json()).then(setProjects);
     fetch(`/api/time?month=${currentMonth}`).then(r => r.json()).then(setTimeLog);
+    fetch('/api/contacts').then(r => r.json()).then(async (ctcts: { slug: string; name: string; company: string }[]) => {
+      setContacts(ctcts);
+      const tasksByContact: Record<string, { id: number; text: string; completed: boolean }[]> = {};
+      await Promise.all(ctcts.map(async (c) => {
+        const res = await fetch(`/api/contacts/${c.slug}`);
+        const data = await res.json();
+        tasksByContact[c.slug] = (data.tasks as { id: number; text: string; completed: boolean }[]).filter(t => !t.completed);
+      }));
+      setContactTasksMap(tasksByContact);
+    });
   }, [currentMonth]);
 
   // All open tasks across all active projects
@@ -102,6 +114,31 @@ export default function FocusPage() {
             </div>
           )}
         </div>
+
+        {/* By Contact tasks */}
+        {contacts.some(c => (contactTasksMap[c.slug]?.length ?? 0) > 0) && (
+          <div className="space-y-3">
+            <div className="flex items-center gap-2">
+              <Users className="size-3.5 text-muted-foreground" />
+              <h2 className="text-sm font-medium">
+                By Contact
+              </h2>
+            </div>
+            {contacts
+              .filter(c => (contactTasksMap[c.slug]?.length ?? 0) > 0)
+              .map(c => (
+                <div key={c.slug} className="space-y-1.5">
+                  <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{c.name}</p>
+                  {(contactTasksMap[c.slug] ?? []).map(t => (
+                    <div key={t.id} className="flex items-start gap-3 rounded-lg border px-3 py-2.5">
+                      <div className="size-4 rounded border border-input mt-0.5 shrink-0" />
+                      <span className="text-sm flex-1">{t.text}</span>
+                    </div>
+                  ))}
+                </div>
+              ))}
+          </div>
+        )}
 
         {/* Budget status */}
         <div className="rounded-lg border p-4 space-y-3">
