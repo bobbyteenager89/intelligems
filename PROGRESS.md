@@ -81,6 +81,47 @@
 | `.gitignore` | Added .env.local |
 
 ### Next Steps
-- [ ] Rename browser tab title from "Create Next App" to "Intelligems Workspace"
 - [ ] Test ↗ send button end-to-end with personal-os running
+- [ ] Add mobile-responsive layout for occasional phone use
+
+---
+
+## 2026-03-08 — Session 3: Housekeeping + People Hub
+
+### Accomplished
+- Committed untracked docs/plans/ (plan files from between-session work)
+- Renamed browser tab: "Create Next App" → "Intelligems Workspace"
+- Pushed all 10 commits to GitHub (origin/master) — Vercel auto-deployed
+- People Hub DB schema: contacts, contact_benchmark_tags, contact_deliverables, contact_tasks tables (already committed between sessions)
+- All contact API routes: CRUD + sub-resources (tags, deliverables, tasks) + public token endpoint
+- Benchmarker bridge: src/lib/benchmarks.ts — fetchBenchmarks() by tag array
+- People Hub UI:
+  - Sidebar: People nav item (Users icon → /people)
+  - List page: /people — contact cards, New Contact dialog
+  - Detail page: /people/[slug] — Context, Tags, Deliverables, Tasks, Meeting Notes panels, Share Link copy
+  - Public page: /c/[token] — read-only view with benchmarks, deliverables, next steps
+  - Focus tab: "By Contact" section groups open contact tasks
+
+### Files Added/Modified
+| File | Changes |
+|------|---------|
+| `src/lib/db/schema.ts` | Added contacts, contact_benchmark_tags, contact_deliverables, contact_tasks tables |
+| `src/app/api/contacts/route.ts` | List + create contacts |
+| `src/app/api/contacts/[slug]/route.ts` | GET + PATCH single contact |
+| `src/app/api/contacts/[slug]/tags/route.ts` | POST + DELETE tags |
+| `src/app/api/contacts/[slug]/deliverables/route.ts` | POST + DELETE deliverables |
+| `src/app/api/contacts/[slug]/tasks/route.ts` | POST + PATCH + DELETE tasks |
+| `src/app/api/public/contacts/[token]/route.ts` | Public token-based lookup |
+| `src/lib/benchmarks.ts` | fetchBenchmarks() bridge to Benchmarker |
+| `src/components/sidebar.tsx` | Added People nav item |
+| `src/app/(dashboard)/people/page.tsx` | Contact list with New Contact dialog |
+| `src/app/(dashboard)/people/[slug]/page.tsx` | Full contact detail (all panels) |
+| `src/app/c/[token]/page.tsx` | Public shareable contact page |
+| `src/app/(dashboard)/focus/page.tsx` | By-Contact task grouping section |
+| `src/app/layout.tsx` | Renamed browser tab to "Intelligems Workspace" |
+
+### Next Steps
+- [ ] Seed contacts via UI: Jerry (tag: analytics), Drew (tasks: profit guessing game, CAC calculator)
+- [ ] Test public share page at /c/[token] in incognito
+- [ ] Add BENCHMARKER_URL + BENCHMARKER_SECRET env vars to Vercel when Benchmarker bridge is ready
 - [ ] Add mobile-responsive layout for occasional phone use
