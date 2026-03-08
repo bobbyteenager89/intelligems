@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import {
@@ -90,8 +90,6 @@ export default function ContactDetailPage() {
   // Task add input
   const [taskInput, setTaskInput] = useState('');
 
-  const contextSaveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-
   // ── Fetch on mount ──────────────────────────────────────────────────────────
 
   useEffect(() => {
@@ -123,7 +121,6 @@ export default function ContactDetailPage() {
 
   function handleContextBlur() {
     if (!contact) return;
-    if (contextSaveTimer.current) clearTimeout(contextSaveTimer.current);
     fetch(`/api/contacts/${slug}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
