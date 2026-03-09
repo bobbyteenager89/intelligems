@@ -14,6 +14,9 @@ const CATEGORIES = ['research', 'strategy', 'meeting', 'admin', 'content', 'buil
 
 function getCurrentYearMonth() {
   const d = new Date();
+  if (d.getDate() < BUDGET_RESET_DAY) {
+    d.setDate(0); // move to last day of previous month
+  }
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 

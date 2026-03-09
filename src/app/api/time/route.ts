@@ -2,9 +2,13 @@ import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { timeEntries } from '@/lib/db/schema';
 import { eq } from 'drizzle-orm';
+import { BUDGET_RESET_DAY } from '@/lib/config';
 
 function getCurrentYearMonth(): string {
   const d = new Date();
+  if (d.getDate() < BUDGET_RESET_DAY) {
+    d.setDate(0); // move to last day of previous month
+  }
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 

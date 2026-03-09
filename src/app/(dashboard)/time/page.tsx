@@ -44,12 +44,19 @@ function getDaysUntilReset(): number {
 
 function getCurrentYearMonth(): string {
   const d = new Date();
+  if (d.getDate() < BUDGET_RESET_DAY) {
+    d.setDate(0); // move to last day of previous month
+  }
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}`;
 }
 
-function getMonthLabel(yearMonth: string): string {
+function getBillingPeriodLabel(yearMonth: string): string {
   const [year, month] = yearMonth.split('-').map(Number);
-  return new Date(year, month - 1, 1).toLocaleString('default', { month: 'long', year: 'numeric' });
+  const start = new Date(year, month - 1, BUDGET_RESET_DAY);
+  const end = new Date(year, month, BUDGET_RESET_DAY - 1);
+  const fmt = (d: Date) => d.toLocaleString('default', { month: 'short', day: 'numeric' });
+  const endYear = end.getFullYear();
+  return `${fmt(start)} – ${fmt(end)}, ${endYear}`;
 }
 
 function getThisWeekEntries(entries: TimeEntry[]): TimeEntry[] {
@@ -151,7 +158,7 @@ export default function TimePage() {
               <span className="text-muted-foreground text-sm"> / {BUDGET_HOURS}h</span>
             </div>
             <span className="text-sm text-muted-foreground">
-              {getMonthLabel(currentMonth)}
+              {getBillingPeriodLabel(currentMonth)}
             </span>
           </div>
           <Progress value={pct} className="h-2.5" />
@@ -212,7 +219,7 @@ export default function TimePage() {
           <div className="space-y-3">
             <h2 className="text-sm font-medium flex items-center gap-2">
               <TrendingUp className="size-3.5" />
-              This Month by Category
+              This Period by Category
             </h2>
             <div className="space-y-2.5">
               {sortedCategories.map(([cat, h]) => (
